@@ -5,7 +5,7 @@
  */
 #include <stddef.h>
 #include "matrice.h"
-
+#include <stdio.h>
 const char *mat_message_erreur(MatErreur code)
 {
     switch (code) {
