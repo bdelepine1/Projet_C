@@ -23,6 +23,6 @@ test_ex3: test_ex3.c $(MODULES)
 demo_matrices: main.c $(MODULES)
 	$(CC) $(CFLAGS) $^ -o $@
 
-# supprime tout les exécutables créer
+# supprime tout les exécutables créer et le fichier créer par mat_ecrire lors de l'éxecution de test_ex2
 clean:
-	rm -f test_ex1 test_ex2 test_ex3 demo_matrices
+	rm -f test_ex1 test_ex2 test_ex3 demo_matrices test_ex2_sortie.txt
