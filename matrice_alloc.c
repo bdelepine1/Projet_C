@@ -52,8 +52,8 @@ MatErreur mat_allouer(Matrice *res, int nb_lignes, int nb_colonnes)
     for (int i = 0; i < nb_lignes; i++) {
         coef[i] = mat_calloc((size_t)nb_colonnes, sizeof *coef[i]);    // nb_colonnes entiers
             if (coef[i] == NULL) {
-                for (int k = i - 1; k >= 0; k--)  // lignes déjà
-                    free(coef[k]);                // obtenues
+                for (int k = i - 1; k >= 0; k--)  // lignes déjà obtenues
+                    free(coef[k]);
                 free(coef);                       // puis le tableau
                 return MAT_ERR_ALLOCATION;
             }
