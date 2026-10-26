@@ -193,6 +193,7 @@ if (m->coef != NULL){
     free(m->coef);
 }
 /* si m->coef n’est pas NULL, une boucle for libère m->coef[i] pour i allant de 0 à m->nb_lignes - 1, puis on libère m->coef */
+
 ```
 
 #### Réponse aux questions de réflexion
@@ -236,15 +237,15 @@ Bilan : 16 / 16 verifications reussies.
 #### Code écrit et commenté
 
 ```c
-/* (2.a) *\ 
+/* (2.a) */
 for (int i = 0; i < m->nb_lignes; i++) {
     for (int j = 0; j < m->nb_colonnes; j++)
         printf(" %8d", m->coef[i][j]);
     putchar('\n');
 }
-/* Double boucle for pour parcourir la matrice, affichage de chaque coefficient avec un espacement %8d et saut de ligne en fin de ligne (putchar('\n')). *\
+/* Double boucle for pour parcourir la matrice, affichage de chaque coefficient avec un espacement %8d et saut de ligne en fin de ligne (putchar('\n')). */
 
-/* (2.b) *\
+/* (2.b) */
 
 for (int i = 0; i < m->nb_lignes; i++) {
     for (int j = 0; j < m->nb_colonnes; j++)
@@ -255,25 +256,25 @@ for (int i = 0; i < m->nb_lignes; i++) {
         return MAT_ERR_ECRITURE;
     }
 
-/* Parcours de la matrice avec affichage de chaque coefficient avec un operateur ternaire (j==0 ? "%d" : " %d") pour éviter l'espace en trop en début de ligne, et vérification des erreurs d'écriture(fprintf et fputc). *\
+/* Parcours de la matrice avec affichage de chaque coefficient avec un operateur ternaire (j==0 ? "%d" : " %d") pour éviter l'espace en trop en début de ligne, et vérification des erreurs d'écriture(fprintf et fputc). */
 
-/* (2.c) *\
+/* (2.c) */
 
 if((1>nb_lignes) || (nb_lignes>MAT_DIM_MAX)||(1>nb_colonnes)||(nb_colonnes>MAT_DIM_MAX))
     return MAT_ERR_FORMAT;
 
-/* Vérification que le nombre de lignes et de colonnes est compris entre 1 et MAT_DIM_MAX, renvoyant MAT_ERR_FORMAT si le fichier est invalide. *\
+/* Vérification que le nombre de lignes et de colonnes est compris entre 1 et MAT_DIM_MAX, renvoyant MAT_ERR_FORMAT si le fichier est invalide. */
 
-/* (2.d) *\
+/* (2.d) */
 
 Matrice tmp;
     err = mat_allouer(&tmp, nb_lignes, nb_colonnes);
     if (err != MAT_OK)
         return err;
 
-/* Déclaration et allocation d'une matrice locale tmp pour sécurisé le chargementsans corrompre le résultat en cas d'échec. *\
+/* Déclaration et allocation d'une matrice locale tmp pour sécurisé le chargementsans corrompre le résultat en cas d'échec. */
 
-/* (2.e) *\
+/* (2.e) */
 
 for(int i=0;i<nb_lignes;i++){
     for(int j=0;j<nb_colonnes;j++){
@@ -285,14 +286,14 @@ for(int i=0;i<nb_lignes;i++){
     }
 }
 
-/* Double boucle pour chaque coefficient via lire_entier, en cas d'erreur la mémoire de la matrice temporaire est immédiatement libérée pour éviter les fuites. *\
+/* Double boucle pour chaque coefficient via lire_entier, en cas d'erreur la mémoire de la matrice temporaire est immédiatement libérée pour éviter les fuites. */
 
-/* (2.f) *\
+/* (2.f) */
 
 *res=tmp;
 return MAT_OK;
 
-/* Copie de la matrice temporaire validée vers le pointeur de sortie (*res = tmp) et retour de MAT_OK. *\
+/* Copie de la matrice temporaire validée vers le pointeur de sortie (*res = tmp) et retour de MAT_OK. */
 ```
 
 #### Réponses aux questions de réflexion
@@ -342,51 +343,50 @@ Bilan : 14 / 14 verifications reussies.
 #### code écrit et commenté
 
 ```c
-/* (3.a) *\
+/* (3.a) */
 
 if ((a->nb_lignes != b->nb_lignes) || (a->nb_colonnes != b->nb_colonnes))
     return MAT_ERR_DIMENSIONS;
 
-/* Renvoie MAT_ERR_DIMENSIONS si les deux matrices n'ont pas exactement la même taille *\
+/* Renvoie MAT_ERR_DIMENSIONS si les deux matrices n'ont pas exactement la même taille */
 
-/* (3.b) *\
+/* (3.b) */
 
 Matrice r = MATRICE_VIDE;
     err = mat_allouer(&r, a->nb_lignes, a->nb_colonnes);
     if (err != MAT_OK)
         return err;
 
-/* Allocation de la matrice r aux dimensions de a avec gestions d'erreur si l'allocation échoue. *\
+/* Allocation de la matrice r aux dimensions de a avec gestions d'erreur si l'allocation échoue. */
 
-/* (3.c) *\
+/* (3.c) */
 
 long long s = (long long)a->coef[i][j] + b->coef[i][j];
 
-/* Calcul de la somme des coefficients en long long via un cast explicite pour forcer l'addition dans un type plus grand pour empêcher tout débordement. *\
+/* Calcul de la somme des coefficients en long long via un cast explicite pour forcer l'addition dans un type plus grand pour empêcher tout débordement. */
 
-/* (3.d) *\
+/* (3.d) */
 
 *res = r;  return MAT_OK;
 
-/* Transfert de la matrice résultat validé vers *res et retour de MAT_OK . *\
-
+/* Transfert de la matrice résultat validé vers *res et retour de MAT_OK . */
 /* (3.e) *\
 
 if (a->nb_colonnes != b->nb_lignes)
     return MAT_ERR_DIMENSIONS;
 
-/* Vérifie que le nombre de colonnes de a est bien égale au nombre de colonnes de b sinon retour de MAT_ERR_DIMENSIONS . *\
+/* Vérifie que le nombre de colonnes de a est bien égale au nombre de colonnes de b sinon retour de MAT_ERR_DIMENSIONS . */
 
-/* (3.f) *\
+/* (3.f) */
 
 Matrice r = MATRICE_VIDE;
     err = mat_allouer(&r, a->nb_lignes, b->nb_colonnes);
     if (err != MAT_OK)
         return err;
 
-/* Allocation de la matrice r avec les dimensions du produit: lignes de a * colonnes de b. *\
+/* Allocation de la matrice r avec les dimensions du produit: lignes de a * colonnes de b. */
 
-/* (3.g) *\
+/* (3.g) */
 
 for (int k = 0; k < a->nb_colonnes; k++) {
     long long p = (long long)a->coef[i][k] * b->coef[k][j];
@@ -398,13 +398,13 @@ for (int k = 0; k < a->nb_colonnes; k++) {
     s += p;
 }
 
-/* Boucle de calcul du produit scalaire avec cast en long long, contrôle anti-overflow avant l'addition et nettoyage immédiat de r en cas de dépassement. *\
+/* Boucle de calcul du produit scalaire avec cast en long long, contrôle anti-overflow avant l'addition et nettoyage immédiat de r en cas de dépassement. */
 
-/* (3.h) *\
+/* (3.h) */
 
 *res = r;  return MAT_OK;
 
-/* Transfert du résulat final vers *res et retour de MAT_OK . *\
+/* Transfert du résulat final vers *res et retour de MAT_OK . */
 ```
 
 #### Réponses aux questions de réflexion
@@ -446,14 +446,14 @@ Bilan : 14 / 14 verifications reussies.
 #### code écrit et commenté
 
 ```c
-/* (4.a) *\
+/* (4.a) */
 
 mat_afficher("A", &a);
 mat_afficher("B", &b);
 
-/* Affichage des matrices A et B via mat_afficher . *\
+/* Affichage des matrices A et B via mat_afficher . */
 
-/* (4.b) *\
+/* (4.b) */
 
 MatErreur err = addition ? mat_additionner(&a, &b, &r): mat_multiplier(&a, &b, &r);
 if (err != MAT_OK) {
@@ -462,20 +462,20 @@ if (err != MAT_OK) {
     goto nettoyage;
 }
 
-/* Exécution du calcul addition ou multiplication selon le paramètre avec gestion d'erreur, affichage sur stderr du message et des dimensions, puis goto nettoyage. *\
+/* Exécution du calcul addition ou multiplication selon le paramètre avec gestion d'erreur, affichage sur stderr du message et des dimensions, puis goto nettoyage. */
 
-/* (4.c) *\
+/* (4.c) */
 
 strcmp(argv[1],"add")==0 ? mat_afficher("R = A + B",&r) : mat_afficher("R = A x B",&r);
 
-/* Affichage du résultat de r avec un opérateur ternaire sur l'argument pour adapter le nom(R = A + B ou R = A * B). *\
+/* Affichage du résultat de r avec un opérateur ternaire sur l'argument pour adapter le nom(R = A + B ou R = A * B). */
 
-/* (4.d) *\
+/* (4.d) */
 
 printf("Resultat enregistre dans \"%s\".\n",argv[4]);
 statut= EXIT_SUCCESS;
 
-/* Confirmation de la sauvegarde et passage du statut à EXIT_SUCCESS . *\
+/* Confirmation de la sauvegarde et passage du statut à EXIT_SUCCESS . */
 ```
 
 #### Réponses aux questions de réflexion
