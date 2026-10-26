@@ -413,7 +413,7 @@ for (int k = 0; k < a->nb_colonnes; k++) {
 
 **Q5.2** :On refuse cet appel pour éviter d'écraser directement la matrice a pendanrt le calcul, ce qui provoquerait une fuite de mémoire puisque l'ancienne mémoire ne serait pas libérée.
 
-**Q5.3** :Le nombre de multiplications d'entiers effectué par mat_multiplier() pour des matrices n*p et p*q est égale à n*p*q donc pour deux matrice 1000*1000 le résultat est 1000*1000*1000.
+**Q5.3** :Le nombre de multiplications d'entiers effectué par mat_multiplier() pour des matrices n * p et p * q est égale à n * p * q donc pour deux matrice 1000 * 1000 le résultat est 1000 * 1000 * 1000.
 
 **Q5.4** :un dépassement sur le type int provoque un comportement indéfini en C. C'est pourquoi on doit passer par un type plus grand tel que long long.
 
