@@ -36,7 +36,7 @@ MatErreur mat_additionner(const Matrice *a, const Matrice *b,
     MatErreur err = verifier_parametres(a, b, res);      /* FOURNI */
     if (err != MAT_OK)
         return err;
-    
+
     if ((a->nb_lignes != b->nb_lignes) || (a->nb_colonnes != b->nb_colonnes))
         return MAT_ERR_DIMENSIONS;
     /* (3.a) COMPLÉTER : si a et b n'ont pas le même nombre de lignes
@@ -60,7 +60,7 @@ MatErreur mat_additionner(const Matrice *a, const Matrice *b,
              *       (i, j) de a et de b EN long long :
              *         long long s = (long long)a->coef[i][j] + ... ;  */
             long long s = (long long)a->coef[i][j] + b->coef[i][j];
-            
+
 
             if (!tient_dans_int(s)) {                    /* FOURNI */
                 mat_detruire(&r);

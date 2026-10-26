@@ -4,7 +4,6 @@
 * **Titre :** TD Manipulation de matrices dynamiques en C11
 * **Membres :** Delépine Bastien (`@bdelepine1`) et Delporte William (`@Willdel09`)
 * **Groupe :** TD1
-* **Date de remise :** ???
 
 ### Table des matières
 1. [En-tête](#1-en-tête)
@@ -232,23 +231,79 @@ if (m->coef != NULL){
 Bilan : 16 / 16 verifications reussies.
 ```
 
-### Exercice 2 : Entrées-sorties
+### Exercice 2 : Entrées-sorties ('matrice_io.c')
 
 #### Code écrit et commenté
 
 ```c
+/* (2.a) *\ 
+for (int i = 0; i < m->nb_lignes; i++) {
+    for (int j = 0; j < m->nb_colonnes; j++)
+        printf(" %8d", m->coef[i][j]);
+    putchar('\n');
+}
+/* Double boucle for pour parcourir la matrice, affichage de chaque coefficient avec un espacement %8d et saut de ligne en fin de ligne (putchar('\n')). *\
 
+/* (2.b) *\
+
+for (int i = 0; i < m->nb_lignes; i++) {
+    for (int j = 0; j < m->nb_colonnes; j++)
+        if(fprintf(f,j==0 ? "%d": " %d", m->coef[i][j])<0)
+            return MAT_ERR_ECRITURE;
+
+    if(fputc('\n',f)==EOF)
+        return MAT_ERR_ECRITURE;
+    }
+
+/* Parcours de la matrice avec affichage de chaque coefficient avec un operateur ternaire (j==0 ? "%d" : " %d") pour éviter l'espace en trop en début de ligne, et vérification des erreurs d'écriture(fprintf et fputc). *\
+
+/* (2.c) *\
+
+if((1>nb_lignes) || (nb_lignes>MAT_DIM_MAX)||(1>nb_colonnes)||(nb_colonnes>MAT_DIM_MAX))
+    return MAT_ERR_FORMAT;
+
+/* Vérification que le nombre de lignes et de colonnes est compris entre 1 et MAT_DIM_MAX, renvoyant MAT_ERR_FORMAT si le fichier est invalide. *\
+
+/* (2.d) *\
+
+Matrice tmp;
+    err = mat_allouer(&tmp, nb_lignes, nb_colonnes);
+    if (err != MAT_OK)
+        return err;
+
+/* Déclaration et allocation d'une matrice locale tmp pour sécurisé le chargementsans corrompre le résultat en cas d'échec. *\
+
+/* (2.e) *\
+
+for(int i=0;i<nb_lignes;i++){
+    for(int j=0;j<nb_colonnes;j++){
+        err = lire_entier(f, &tmp.coef[i][j]);
+        if (err != MAT_OK) {
+            mat_detruire(&tmp);
+            return err;
+        }
+    }
+}
+
+/* Double boucle pour chaque coefficient via lire_entier, en cas d'erreur la mémoire de la matrice temporaire est immédiatement libérée pour éviter les fuites. *\
+
+/* (2.f) *\
+
+*res=tmp;
+return MAT_OK;
+
+/* Copie de la matrice temporaire validée vers le pointeur de sortie (*res = tmp) et retour de MAT_OK. *\
 ```
 
 #### Réponses aux questions de réflexion
 
-**Q4.1** :
+**Q4.1** :Pour éviter de modifier *res si une erreur ce produit pendant la lecture. Si ça plante on supprime le stockage temporaire tmp sans tout casser. 
 
-**Q4.2** :
+**Q4.2** :Non car fscanf ignore les retours à la ligne et les espaces.Ce n'est pas génant car le tolérant en lecture signifie que l'on accepte n'importe quel espacement et le stricte en écriture signifie que l'on structure proprement les données de sortie.
 
-**Q4.3** :
+**Q4.3** :Comme le curseur du fichier reste positionné juste après le dernier coefficient lu, il suffit de refaire un mat_lire pour lire la matrice suivante dans le même fichier.
 
-**Q4.4** :
+**Q4.4** :fflush force l'écriture immédiate et détecte les erreurs. Et non cela ne dispense pas de tester fclose puisque que le fichier reste ouvert.
 
 #### Sortie du test
 
@@ -282,23 +337,85 @@ M (4 x 3) :
 Bilan : 14 / 14 verifications reussies.
 ```
 
-### Exercice 3 : Calcul matriciel
+### Exercice 3 : Calcul matriciel ('matrice_calcul.c')
 
 #### code écrit et commenté
 
 ```c
+/* (3.a) *\
 
+if ((a->nb_lignes != b->nb_lignes) || (a->nb_colonnes != b->nb_colonnes))
+    return MAT_ERR_DIMENSIONS;
+
+/* Renvoie MAT_ERR_DIMENSIONS si les deux matrices n'ont pas exactement la même taille *\
+
+/* (3.b) *\
+
+Matrice r = MATRICE_VIDE;
+    err = mat_allouer(&r, a->nb_lignes, a->nb_colonnes);
+    if (err != MAT_OK)
+        return err;
+
+/* Allocation de la matrice r aux dimensions de a avec gestions d'erreur si l'allocation échoue. *\
+
+/* (3.c) *\
+
+long long s = (long long)a->coef[i][j] + b->coef[i][j];
+
+/* Calcul de la somme des coefficients en long long via un cast explicite pour forcer l'addition dans un type plus grand pour empêcher tout débordement. *\
+
+/* (3.d) *\
+
+*res = r;  return MAT_OK;
+
+/* Transfert de la matrice résultat validé vers *res et retour de MAT_OK . *\
+
+/* (3.e) *\
+
+if (a->nb_colonnes != b->nb_lignes)
+    return MAT_ERR_DIMENSIONS;
+
+/* Vérifie que le nombre de colonnes de a est bien égale au nombre de colonnes de b sinon retour de MAT_ERR_DIMENSIONS . *\
+
+/* (3.f) *\
+
+Matrice r = MATRICE_VIDE;
+    err = mat_allouer(&r, a->nb_lignes, b->nb_colonnes);
+    if (err != MAT_OK)
+        return err;
+
+/* Allocation de la matrice r avec les dimensions du produit: lignes de a * colonnes de b. *\
+
+/* (3.g) *\
+
+for (int k = 0; k < a->nb_colonnes; k++) {
+    long long p = (long long)a->coef[i][k] * b->coef[k][j];
+    if ((p > 0 && s > LLONG_MAX - p)
+        || (p < 0 && s < LLONG_MIN - p)) {
+        mat_detruire(&r);
+        return MAT_ERR_DEPASSEMENT;
+    }
+    s += p;
+}
+
+/* Boucle de calcul du produit scalaire avec cast en long long, contrôle anti-overflow avant l'addition et nettoyage immédiat de r en cas de dépassement. *\
+
+/* (3.h) *\
+
+*res = r;  return MAT_OK;
+
+/* Transfert du résulat final vers *res et retour de MAT_OK . *\
 ```
 
 #### Réponses aux questions de réflexion
 
-**Q5.1** :
+**Q5.1** :Le const Matrice *a protège seulement les dimensions et l'adresse de la structure mais pas les coefficients eux-mêmes. Pour que le compilateur refuse l'affectation, il faudrait déclarer les coefficients en const.
 
-**Q5.2** :
+**Q5.2** :On refuse cet appel pour éviter d'écraser directement la matrice a pendanrt le calcul, ce qui provoquerait une fuite de mémoire puisque l'ancienne mémoire ne serait pas libérée.
 
-**Q5.3** :
+**Q5.3** :Le nombre de multiplications d'entiers effectué par mat_multiplier() pour des matrices n*p et p*q est égale à n*p*q donc pour deux matrice 1000*1000 le résultat est 1000*1000*1000.
 
-**Q5.4** :
+**Q5.4** :un dépassement sur le type int provoque un comportement indéfini en C. C'est pourquoi on doit passer par un type plus grand tel que long long.
 
 #### Sortie du test
 
@@ -329,16 +446,45 @@ Bilan : 14 / 14 verifications reussies.
 #### code écrit et commenté
 
 ```c
+/* (4.a) *\
 
+mat_afficher("A", &a);
+mat_afficher("B", &b);
+
+/* Affichage des matrices A et B via mat_afficher . *\
+
+/* (4.b) *\
+
+MatErreur err = addition ? mat_additionner(&a, &b, &r): mat_multiplier(&a, &b, &r);
+if (err != MAT_OK) {
+    fprintf(stderr, "Erreur : calcul impossible : %s ",mat_message_erreur(err));
+    fprintf(stderr, "(A : %d x %d, B : %d x %d)\n",a.nb_lignes,a.nb_colonnes,b.nb_lignes,b.nb_colonnes);
+    goto nettoyage;
+}
+
+/* Exécution du calcul addition ou multiplication selon le paramètre avec gestion d'erreur, affichage sur stderr du message et des dimensions, puis goto nettoyage. *\
+
+/* (4.c) *\
+
+strcmp(argv[1],"add")==0 ? mat_afficher("R = A + B",&r) : mat_afficher("R = A x B",&r);
+
+/* Affichage du résultat de r avec un opérateur ternaire sur l'argument pour adapter le nom(R = A + B ou R = A * B). *\
+
+/* (4.d) *\
+
+printf("Resultat enregistre dans \"%s\".\n",argv[4]);
+statut= EXIT_SUCCESS;
+
+/* Confirmation de la sauvegarde et passage du statut à EXIT_SUCCESS . *\
 ```
 
 #### Réponses aux questions de réflexion
 
-**Q6.1** :
+**Q6.1** :Pour séparer la logique de la bibliothèque de l'affichage. Comme ça, une interface graphique ou un autre type de programme peut réutiliser la bibliothèque et gérer ses propres messages d'erreur.
 
-**Q6.2** :
+**Q6.2** :En lecture(charger), le fichier est juste lu donc une erreur à la fermeture est impossible. En écriture(sauvegarder), fclose valide le vidage des tampons et permet de détecter une erreur.
 
-**Q6.3** :
+**Q6.3** :Il faut liberer les trois matrices a, b et r. Le programme le fait grâce au goto nettoyage qui appelle mat_detruire sur les trois quelle que soit l'étape où cela échoue.
 
 #### Sortie des scénarios
 
@@ -527,6 +673,15 @@ Pour me former sur github et Markdown principalement j'ai utilisé l'IA (gemini)
 
 ### Bilan et difficultés de Delporte William
 
+Pendant ce projet j'ai pu consolider mes compétences en C. Bien que la création et l'initialisation du dépôt GitHub aient été prises en charge par mon binome, j'ai pu pratiquer et assimiler la méthode à ses côtés. Ce sera me directement utile pour les futurs projets de l'INSA et pour ma carrière professionnelle. 
+
 #### tâches éffectuers
 
+- Résolution de l'exercice 2
+- Résolution de l'exercice 4
+- Test de la mémoire avec Valgrind
+- Rédaction du compte rendu
+
 #### Aides extérieurs
+
+Durant ce projet, j'ai dû utiliser l'IA(gemini) pour apprendre à utiliser GitHub et pour découvrir l'utilisation de WSL face au problème de compatibilité avec Valgrind sous Windows.

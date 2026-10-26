@@ -28,7 +28,7 @@ const char *mat_message_erreur(MatErreur code)
 
 int mat_est_valide(const Matrice *m)
 {
-    
+
     /* (1.b) COMPLÉTER : renvoyer 1 si les QUATRE conditions suivantes
      *       sont vraies, 0 sinon :
      *         - m n'est pas NULL ;
